@@ -5,22 +5,22 @@
 #include <WiFi.h>
 
 
-int beaconScanTime = 4;
+int beaconScanTime = 1;
 
 const char* ssid     = "NETGEAR31";
-const char* password = "jaggedboat471";
+const char* password = "bluerabbit622";
 
-const char* host = "192.168.1.2";
+const char* host = "192.168.1.27";
 int port = 4000;
 
 char rssiSend[20];
 String rssi;
-
+int INT_RSSI;
 int status = WL_IDLE_STATUS;
 WiFiClient client;
 
 typedef struct {
-  char address[17];   // 67:f1:d2:04:cd:5d
+  char address[17];   // MAC: d6:5e:c7:5f:2b:a6 
   int rssi;
 } BeaconData;
 
@@ -50,16 +50,8 @@ public:
     
     
     String mac = advertisedDevice.getAddress().toString().c_str();
-    if (mac == "f6:ac:bc:64:cb:50"){
-      rssi = String(advertisedDevice.getRSSI());
-      rssi = rssi + '0';
-      Serial.println(rssi);
-      Serial.println(rssi.length());
-      rssi.toCharArray(rssiSend, rssi.length());
-      Serial.println(rssiSend);
-      Serial.printf("MAC: %s \n", advertisedDevice.getAddress().toString().c_str());
-      Serial.printf("name: %s \n", advertisedDevice.getName().c_str());
-      Serial.printf("RSSI: %d \n", advertisedDevice.getRSSI());
+    if (mac == "d6:5e:c7:5f:2b:a6"){
+      INT_RSSI = advertisedDevice.getRSSI();
     }
   }
   
@@ -79,7 +71,7 @@ void setup() {
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
+    //delay(500);
     Serial.print(".");
   }
 
@@ -96,31 +88,35 @@ void setup() {
 }
 
 void ScanBeacons() {
-  delay(1000);
+  
   BLEScan* pBLEScan = BLEDevice::getScan(); //create new scan
   MyAdvertisedDeviceCallbacks cb;
   pBLEScan->setAdvertisedDeviceCallbacks(&cb);
   pBLEScan->setActiveScan(true); //active scan uses more power, but get results faster
   BLEScanResults foundDevices = pBLEScan->start(beaconScanTime);
-  Serial.print("Devices found: ");
+  
   //Serial.print(cb.getConcatedMessage());
-  /*
-  for (uint8_t i = 0; i < bufferIndex; i++) {
-    Serial.print(buffer[i].address);
-    Serial.print(" : ");
-    Serial.println(buffer[i].rssi);
-  }
-  */
+ 
   // Stop BLE
   pBLEScan->stop();
-  delay(1000);
-  Serial.println("Scan done!");
   
+  Serial.println("Scan done!");
 }
 
 void loop() {
   Serial.println("Start Scan");
   boolean result;
+  int total = 0;
+  for (int i=0; i<3; i++){
+    ScanBeacons();
+    total = total + INT_RSSI;
+  }
+  int AVG_RSSI = total / 3;
+  rssi = String(AVG_RSSI);
+  Serial.println("Average RSSI: " + rssi);
+  rssi = rssi + '0';
+  rssi.toCharArray(rssiSend, rssi.length());
+  
   ScanBeacons();
 
   bufferIndex = 0;
@@ -129,8 +125,8 @@ void loop() {
       if (client.connect(host, port)){
         Serial.println("connected");
         Serial.println("Sending to Hub");
-        client.write('1');
-        delay(100);
+        client.write('4'); //ID of the device
+        delay(10);
         Serial.println(rssiSend);
         client.write(rssiSend);
         rssiSend[0] = (char)0;
@@ -139,16 +135,15 @@ void loop() {
       }else{
         Serial.println("could not connect");
         client.stop();
-        
       }
     }else{
       Serial.println("not connected");
       client.stop();
-      delay(5000);
+      //delay(5000);
       return;
     }
 
-  delay(5000);
+  //delay(2000);
   // put your main code here, to run repeatedly:
 
 }
