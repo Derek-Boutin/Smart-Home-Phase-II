@@ -53,7 +53,6 @@ void setup()
 
 void loop(){
    
-  String lightLevel;
   char* message = "Hello World";
     
   if (client.connected()){
