@@ -4,11 +4,7 @@
 #include <BLEAdvertisedDevice.h>
 #include <WiFi.h>
 
-
-
-
 int beaconScanTime = 1;
-
 
 const char* ssid     = "NETGEAR31";
 const char* password = "bluerabbit622";
