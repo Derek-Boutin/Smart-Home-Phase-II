@@ -38,7 +38,7 @@
 Adafruit_TSL2561_Unified tsl = Adafruit_TSL2561_Unified(TSL2561_ADDR_FLOAT, 12345);
 
 int ledPin = 18;                    // choose the pin for the LED
-int inputPin = 19;               // choose the input pin (for PIR sensor)
+int inputPin = 13;               // choose the input pin (for PIR sensor)
 int pirState = LOW;             // we start, assuming no motion detected
 int val = 0;                    // variable for reading the pin status
 
