@@ -7,14 +7,11 @@
  */
 
 #include <WiFi.h>
-#include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_TSL2561_U.h>
 
 const char* ssid     = "NETGEAR31";
-const char* password = "jaggedboat471";
+const char* password = "bluerabbit622";
 
-const char* host = "192.168.1.2";
+const char* host = "192.168.1.30";
 int port = 4000;
 
 WiFiClient client;
